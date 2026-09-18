@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tanA 計算サイト</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;
+  background:linear-gradient(135deg,#dbeafe,#f3e8ff);
+  color:#172033;
+  min-height:100vh;
+  padding:20px;
+}
+.container{max-width:700px;margin:auto}
+h1{text-align:center;font-size:clamp(26px,7vw,38px);margin:12px 0}
+.subtitle{text-align:center;color:#64748b;margin-bottom:25px}
+.card{
+  background:white;border-radius:22px;padding:22px;
+  margin-bottom:18px;box-shadow:0 8px 30px #33415512;
+}
+h2{font-size:20px;margin:0 0 18px}
+.diagram{display:block;width:100%;max-height:260px}
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{font-weight:bold;font-size:14px;display:block;margin-bottom:6px}
+input,select,button{
+  width:100%;padding:13px;border-radius:12px;
+  font:inherit;
+}
+input,select{border:1px solid #cbd5e1;background:#f8fafc}
+input:focus,select:focus{
+  outline:3px solid #bfdbfe;border-color:#2563eb;
+}
+button{
+  border:0;background:#2563eb;color:white;
+  font-weight:bold;cursor:pointer;margin-top:16px;
+}
+button:hover{background:#1d4ed8}
+.result{
+  background:#eff6ff;border:1px solid #bfdbfe;
+  border-radius:16px;padding:20px;text-align:center;
+  margin-top:18px;
+}
+.result .big{font-size:clamp(30px,8vw,44px);font-weight:800;color:#1d4ed8}
+.result p{margin:4px 0;color:#475569}
+.steps{
+  background:#f8fafc;border-radius:14px;padding:15px;
+  margin-top:14px;line-height:2;overflow-wrap:anywhere;
+}
+.note{font-size:13px;color:#64748b;line-height:1.8}
+.error{color:#dc2626;font-size:14px;margin-top:10px}
+@media(max-width:480px){
+  body{padding:12px}
+  .card{padding:16px}
+  .input-grid{gap:10px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📐 tan A 計算機</h1>
+  <p class="subtitle">タンジェントを簡単に計算しよう！</p>
+
+  <div class="card">
+    <h2>直角三角形と tan A</h2>
+
+    <svg class="diagram" viewBox="0 0 500 285"
+         role="img" aria-label="角Aを持つ直角三角形">
+      <path d="M80 230 L80 55 L410 230 Z"
+        fill="#3b82f612" stroke="#2563eb"
+        stroke-width="3" stroke-linejoin="round"/>
+      <path d="M80 207 L103 207 L103 230"
+        fill="none" stroke="#2563eb" stroke-width="2"/>
+      <path d="M80 55 L80 230 L410 230"
+        fill="none" stroke="#2563eb" stroke-width="3"/>
+      <path d="M120 230 A40 40 0 0 0 114 207"
+        fill="none" stroke="#d97706" stroke-width="3"/>
+      <text x="62" y="44" font-size="22" font-weight="bold"
+        fill="currentColor">B</text>
+      <text x="54" y="253" font-size="22" font-weight="bold"
+        fill="currentColor">C</text>
+      <text x="420" y="253" font-size="22" font-weight="bold"
+        fill="currentColor">A</text>
+      <text x="250" y="260" text-anchor="middle"
+        font-size="17" fill="#2563eb">となりの辺</text>
+      <text x="55" y="145" text-anchor="end"
+        font-size="17" fill="#2563eb">向かい側</text>
+      <text x="250" y="125" text-anchor="middle"
+        font-size="18" fill="#2563eb">斜辺</text>
+      <text x="120" y="215" font-size="17" fill="#d97706">A</text>
+    </svg>
+
+    <div class="result">
+      <p>タンジェントの公式</p>
+      <div class="big">tan A =</div>
+      <div style="font-size:20px;font-weight:bold">
+        向かい側の辺 ÷ となりの辺
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>① 角度Aから tanAを求める</h2>
+    <label for="angle">角度 A（度）</label>
+    <input id="angle" type="number" min="0" max="89.999999"
+           step="any" value="30" placeholder="例：30">
+
+    <button onclick="calcAngle()">tan A を計算</button>
+    <div id="angleError" class="error" role="alert"></div>
+
+    <div class="result">
+      <p>計算結果</p>
+      <div class="big" id="angleResult">0.577350</div>
+      <p id="angleFormula">tan 30° = 0.577350</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>② 辺の長さから tanAを求める</h2>
+    <div class="input-grid">
+      <div>
+        <label for="opposite">向かい側の辺</label>
+        <input id="opposite" type="number" min="0"
+               step="any" value="3" placeholder="例：3">
+      </div>
+      <div>
+        <label for="adjacent">となりの辺</label>
+        <input id="adjacent" type="number" min="0.000001"
+               step="any" value="4" placeholder="例：4">
+      </div>
+    </div>
+
+    <button onclick="calcSides()">tan A を計算</button>
+    <div id="sideError" class="error" role="alert"></div>
+
+    <div class="result">
+      <p>計算結果</p>
+      <div class="big" id="sideResult">0.75</div>
+      <p id="sideFormula">tan A = 3 ÷ 4 = 0.75</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>③ よく使う tan の値</h2>
+    <div class="steps">
+      <b>30°</b> → tan30° = 1/√3 ≒ 0.577<br>
+      <b>45°</b> → tan45° = 1<br>
+      <b>60°</b> → tan60° = √3 ≒ 1.732
+    </div>
+    <p class="note">
+      ※ 角度は度（°）で入力してください。このサイトでは0°以上90°未満の角度を計算できます。
+    </p>
+  </div>
+</div>
+
+<script>
+function fmt(n){
+  return Number(n.toFixed(10)).toString();
+}
+
+function calcAngle(){
+  const angle=Number(document.getElementById("angle").value);
+  const error=document.getElementById("angleError");
+  error.textContent="";
+
+  if(!Number.isFinite(angle)||angle<0||angle>=90){
+    error.textContent="0以上90未満の角度を入力してください。";
+    return;
+  }
+
+  const rad=angle*Math.PI/180;
+  const result=Math.tan(rad);
+
+  document.getElementById("angleResult").textContent=fmt(result);
+  document.getElementById("angleFormula").textContent=
+    "tan "+fmt(angle)+"° = "+fmt(result);
+}
+
+function calcSides(){
+  const opposite=Number(document.getElementById("opposite").value);
+  const adjacent=Number(document.getElementById("adjacent").value);
+  const error=document.getElementById("sideError");
+  error.textContent="";
+
+  if(!Number.isFinite(opposite)||!Number.isFinite(adjacent)||
+     opposite<0||adjacent<=0){
+    error.textContent="向かい側は0以上、となりの辺は0より大きい数を入力してください。";
+    return;
+  }
+
+  const result=opposite/adjacent;
+
+  document.getElementById("sideResult").textContent=fmt(result);
+  document.getElementById("sideFormula").textContent=
+    "tan A = "+fmt(opposite)+" ÷ "+fmt(adjacent)+
+    " = "+fmt(result);
+}
+
+calcAngle();
+calcSides();
+</script>
+</body>
+</html>
